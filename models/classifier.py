@@ -7,6 +7,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
 
+import matplotlib.pyplot as plt
+
 
 import pickle
 
@@ -21,6 +23,7 @@ class model():
         self.preprocess = preprocess
         self.parameter_optimal = {}
         self.model = None
+        self.gs_result = None
     
     def grid_search(self, parameters):
         """Grid search on train dataset"""
@@ -51,6 +54,7 @@ class model():
         return self.model.predict(self.test_X)
 
     def visualisation(self):
+        """plot metrics from results"""
         pass
 
 class random_forest_model(model):
@@ -65,16 +69,31 @@ class SVMModel(model):
 
         self.model = SVC()
 
-    def grid_search(self, parameters, n_flod):
+    def grid_search(self, parameters, n_fold):
         """Grid search on train dataset"""
         pipe = Pipeline(steps=[("model", self.model)])
         # Parameters of pipelines can be set using ‘__’ separated parameter names:
-        search = GridSearchCV(pipe, parameters, n_jobs=-1, cv=n_flod)
+        search = GridSearchCV(pipe, parameters, n_jobs=-1, cv=n_fold)
         search.fit(self.train_X, self.train_y)
         
         self.model = search.best_estimator_
+        self.gs_result = search
 
         return search.best_estimator_
+
+    def visualisation(self, path, metrics='mean_test_score'):
+        'save figure of cv'
+
+        fig = plt.figure()
+        scores = [x for x in self.gs_result.cv_results_[metrics]]
+        plt.plot(scores)
+        plt.xlabel('parameters')
+        plt.ylabel(metrics)
+        plt.title(f'{metrics} for models tested during grid search')
+        plt.savefig(path)
+        plt.clf()
+
+        return None
 
 
 

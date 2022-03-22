@@ -31,15 +31,15 @@ def main():
 
     ######################## STEP 2 : apply standard models ########################
     model = classifier.SVMModel(train_data, test_data, preprocessing.basic_preprocessing)
-    # param_grid={"model__kernel": ["rbf"], "model__C": [1]}
-    # model.grid_search(param_grid, nfold=1)
-    # pred = model.predict()
-    # print(pred)
-    # print(model.score(accuracy))
-    # model.save('saved_models/SVM')
-    model.load('/home/yunfei/Desktop/ml-for-medical-data/saved_models/SVM')
+    param_grid={"model__kernel": ["rbf"], "model__C": [0.1, 1, 10]}
+    model.grid_search(param_grid, n_fold=2)
+    pred = model.predict()
+    model.save('saved_models/SVM')
+
+    # model.load('/home/yunfei/Desktop/ml-for-medical-data/saved_models/SVM')
+    model.load('saved_models/SVM')
     print(model.score(accuracy))
-    model.model.
+    model.visualisation('figures/svm.png')
 
 if __name__ == '__main__':
     main()
