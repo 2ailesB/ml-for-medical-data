@@ -11,6 +11,8 @@ from preprocessing import preprocessing
 
 from models import classifier
 
+from metrics.scores import accuracy
+
 
 
 def main():
@@ -28,9 +30,13 @@ def main():
     print(f'test data class number:\n {test_data[64].value_counts()}')
 
 ######################## STEP 2 : apply standard models ########################
-    model = classifier.SVMModel(train_data, test_data, preprocessing.basic_preprocessing)
+    model = classifier.SVMModel(train_data, test_data, preprocessing.basic_preprocessing, nfold=5)
     param_grid={"model__kernel": ["rbf"], "model__C": [1]}
-    model.grid_search(param_grid, n_flod=2)
+    model.grid_search(param_grid)
+    pred = model.predict()
+    print(pred)
+    print(model.score(accuracy))
+
 
 if __name__ == '__main__':
     main()

@@ -37,12 +37,12 @@ class model():
         """Saved trained model"""
         pass
 
+
 class random_forest_model(model):
     def __init__(self, train_data, test_data, preprocess, nfold):
         super().__init__(train_data, test_data, preprocess, nfold, hy)
         self.model = RandomForestClassifier(random_state=0)
         
-
 
 class SVMModel(model):
     def __init__(self, train_data, test_data, preprocess):
@@ -52,19 +52,14 @@ class SVMModel(model):
 
     def grid_search(self, parameters, n_flod):
         """Grid search on train dataset"""
-        # model = SVC(random_state=0)
         pipe = Pipeline(steps=[("model", self.model)])
-
         # Parameters of pipelines can be set using ‘__’ separated parameter names:
-        search = GridSearchCV(pipe, parameters, cv=n_flod, n_jobs=-1)
+        search = GridSearchCV(pipe, parameters, n_jobs=-1)
         search.fit(self.train_X, self.train_y)
+        
+        self.model = search.best_estimator_
 
-        self.parameter_optimal = search.best_params_
-        print(self.parameter_optimal)
-        print(search.)
-        self.model = SVC(**self.parameter_optimal)
-
-        return search
+        return search.best_estimator_
 
     def score(self, metrics):
         """Score on test dataset"""
@@ -73,8 +68,7 @@ class SVMModel(model):
 
     def predict(self):
         """Prediction with optimal parameters"""
-        self.model = SVC(self.parameter_optimal)
-        return self.model(self.test_X, self.test_y)
+        return self.model.predict(self.test_X)
 
     def save(self, filename):
         """Saved trained model"""
