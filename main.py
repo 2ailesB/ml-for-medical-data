@@ -16,7 +16,7 @@ from metrics.scores import accuracy
 
 
 def main():
-######################## STEP 1 : reading and preprocessing data ########################
+    ######################## STEP 1 : reading and preprocessing data ########################
     # data reading
     data= formatting.read_data()
     print(f'data shape: {data.shape} | label: {data.iloc[:, -1].unique()}')
@@ -29,13 +29,14 @@ def main():
     print(f'train data class number:\n {train_data[64].value_counts()}')
     print(f'test data class number:\n {test_data[64].value_counts()}')
 
-######################## STEP 2 : apply standard models ########################
+    ######################## STEP 2 : apply standard models ########################
     model = classifier.SVMModel(train_data, test_data, preprocessing.basic_preprocessing, nfold=5)
     param_grid={"model__kernel": ["rbf"], "model__C": [1]}
     model.grid_search(param_grid)
     pred = model.predict()
     print(pred)
     print(model.score(accuracy))
+    model.save('saved_models/SVM')
 
 
 if __name__ == '__main__':
