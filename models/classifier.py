@@ -20,6 +20,7 @@ class model():
 
         self.preprocess = preprocess
         self.parameter_optimal = {}
+        self.model = None
     
     def grid_search(self, parameters):
         """Grid search on train dataset"""
@@ -33,10 +34,24 @@ class model():
         """Prediction with optimal parameters"""
         pass
 
-    def save(self):
+    def save(self, filename):
         """Saved trained model"""
-        pass
+        pickle.dump(self.model, open(filename, 'wb'))
 
+    def load(self, path):
+        self.model = pickle.load(open(path, 'rb'))
+
+    def score(self, metrics):
+        """Score on test dataset"""
+        y_pred = self.predict()
+        return metrics(y_pred, self.test_y)
+
+    def predict(self):
+        """Prediction with optimal parameters"""
+        return self.model.predict(self.test_X)
+
+    def visualisation(self):
+        pass
 
 class random_forest_model(model):
     def __init__(self, train_data, test_data, preprocess, nfold):
@@ -54,25 +69,13 @@ class SVMModel(model):
         """Grid search on train dataset"""
         pipe = Pipeline(steps=[("model", self.model)])
         # Parameters of pipelines can be set using ‘__’ separated parameter names:
-        search = GridSearchCV(pipe, parameters, n_jobs=-1)
+        search = GridSearchCV(pipe, parameters, n_jobs=-1, cv=n_flod)
         search.fit(self.train_X, self.train_y)
         
         self.model = search.best_estimator_
 
         return search.best_estimator_
 
-    def score(self, metrics):
-        """Score on test dataset"""
-        y_pred = self.predict()
-        return metrics(y_pred, self.test_y)
-
-    def predict(self):
-        """Prediction with optimal parameters"""
-        return self.model.predict(self.test_X)
-
-    def save(self, filename):
-        """Saved trained model"""
-        pickle.dump(self.model, open(filename, 'wb'))
 
 
 if __name__=='__main_':
