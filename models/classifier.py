@@ -11,7 +11,7 @@ from sklearn.linear_model import LogisticRegression
 import pickle
 
 class model():
-    def __init__(self, train_data, test_data, preprocess, nfold):
+    def __init__(self, train_data, test_data, preprocess):
         self.train_X = train_data.iloc[:, 0:64]
         self.train_y = train_data.iloc[:, 64]
 
@@ -19,7 +19,6 @@ class model():
         self.test_y = test_data.iloc[:, 64]
 
         self.preprocess = preprocess
-        self.nfold = nfold
         self.parameter_optimal = {}
     
     def grid_search(self, parameters):
@@ -46,23 +45,24 @@ class random_forest_model(model):
 
 
 class SVMModel(model):
-    def __init__(self, train_data, test_data, preprocess, nfold):
-        super().__init__(train_data, test_data, preprocess, nfold)
+    def __init__(self, train_data, test_data, preprocess):
+        super().__init__(train_data, test_data, preprocess)
 
         self.model = SVC()
 
-    def grid_search(self, parameters):
+    def grid_search(self, parameters, n_flod):
         """Grid search on train dataset"""
         # model = SVC(random_state=0)
-
         pipe = Pipeline(steps=[("model", self.model)])
-#('preprocessing', self.preprocess),
+
         # Parameters of pipelines can be set using ‘__’ separated parameter names:
-        search = GridSearchCV(pipe, parameters, n_jobs=2)
+        search = GridSearchCV(pipe, parameters, cv=n_flod, n_jobs=-1)
         search.fit(self.train_X, self.train_y)
 
         self.parameter_optimal = search.best_params_
-        self.model = SVC(self.parameter_optimal)
+        print(self.parameter_optimal)
+        print(search.)
+        self.model = SVC(**self.parameter_optimal)
 
         return search
 
