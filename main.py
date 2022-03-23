@@ -56,10 +56,10 @@ def main():
     ######################## STEP 3 : apply deep models ########################
     model = NN.NN_classifier(train_data, test_data, 64, [32, 16, 8], 4)
     name = 'MLP'
-    lr, epochs = 0.01, 10
+    lr, epochs, batch_size = 1e-4, 100, 100
     start_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     writer = SummaryWriter('figures/runs/' + start_time )
-    model.fit(nn.CrossEntropyLoss(), lr, epochs, 100, writer)
+    model.fit(nn.CrossEntropyLoss(), lr, epochs, batch_size, writer)
     pred = model.predict()
     model.save(lr, epochs, f'saved_models/{name}', '')
     # model.visualisation(f'figures/{name}.png')

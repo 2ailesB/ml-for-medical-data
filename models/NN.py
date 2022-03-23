@@ -8,7 +8,7 @@ import os
 
 
 class NN_classifier(nn.Module):
-    def __init__(self, train_data, test_data, n_in, layers, n_out, activation = nn.ReLU(), final_activation = None, p=0, batchnorm=True) -> None:
+    def __init__(self, train_data, test_data, n_in, layers, n_out, activation=nn.ReLU(), final_activation=None, p=0, batchnorm=True) -> None:
         # https://stackoverflow.com/questions/46141690/how-to-write-a-pytorch-sequential-model
         super().__init__()
 
@@ -20,12 +20,15 @@ class NN_classifier(nn.Module):
 
         layerlist = []
         for i in layers:
-            layerlist.append(nn.Linear(n_in, i))  # n_in input neurons connected to i number of output neurons
+            # n_in input neurons connected to i number of output neurons
+            layerlist.append(nn.Linear(n_in, i))
             layerlist.append(activation)  # Apply activation function - ReLU
             if batchnorm:
-                layerlist.append(nn.BatchNorm1d(i))  # Apply batch normalization
+                # Apply batch normalization
+                layerlist.append(nn.BatchNorm1d(i))
             if p:
-                layerlist.append(nn.Dropout(p))  # Apply dropout to prevent overfitting
+                # Apply dropout to prevent overfitting
+                layerlist.append(nn.Dropout(p))
             n_in = i  # Reassign number of input neurons as the number of neurons from previous last layer
 
         # Last layer
@@ -40,13 +43,17 @@ class NN_classifier(nn.Module):
     def forward(self, x):
         return self.model(x)
 
-    def fit(self, loss, lr, epochs, batch_size, writer):
-        # one_hot_y = F.one_hot(self.train_y.to(torch.int64))
-        train_dataset = TensorDataset(self.train_X, self.train_y.to(torch.long)) # create your datset
-        train_dataloader = DataLoader(train_dataset, batch_size=batch_size) # create your dataloader
-        n_loader = len(train_dataloader)
+    def fit(self, loss, lr, epochs, batch_size, writer, test_loop=True):
+        train_dataset = TensorDataset(
+            self.train_X, self.train_y.to(torch.long))  # create your datset
+        train_dataloader = DataLoader(
+            train_dataset, batch_size=batch_size)  # create your dataloader
+        test_dataset = TensorDataset(
+            self.test_X, self.test_y.to(torch.long))  # create your datset
+        test_dataloader = DataLoader(
+            test_dataset, batch_size=batch_size)  # create your dataloader
 
-        optim = torch.optim.Adam(self.model.parameters(), lr = lr)
+        optim = torch.optim.Adam(self.model.parameters(), lr=lr)
         for epoch in range(epochs):
             losses = []
             for idx, (X, y) in enumerate(train_dataloader):
@@ -56,9 +63,17 @@ class NN_classifier(nn.Module):
                 l.backward()
                 optim.step()
                 losses.append(l)
+            writer.add_scalar('train loss', torch.Tensor(losses).mean(), epoch)
 
-            writer.add_scalar('loss', torch.Tensor(losses).mean(), epoch)
-            
+            if test_loop:
+                with torch.no_grad():
+                    losses = []
+                    for idx, (X, y) in enumerate(test_dataloader):
+                        yhat = self.model(X)
+                        l = loss(yhat, y)
+                        losses.append(l)
+                    writer.add_scalar('test loss', torch.Tensor(losses).mean(), epoch)
+
         return self.model
 
     def score(self, metrics):
@@ -76,7 +91,8 @@ class NN_classifier(nn.Module):
         self.state['state_dict'] = self.state_dict()
         if not os.path.exists(ckpt_save_path):
             os.mkdir(ckpt_save_path)
-        torch.save(self.state, os.path.join(ckpt_save_path, f'ckpt_{tag}_epoch{n}.ckpt'))
+        torch.save(self.state, os.path.join(
+            ckpt_save_path, f'ckpt_{tag}_epoch{n}.ckpt'))
 
     def load(self, ckpt_path):
         state = torch.load(ckpt_path)
@@ -87,6 +103,3 @@ class NN_classifier(nn.Module):
 
     def grid_search(self):
         pass
-
-
-
