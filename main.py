@@ -36,12 +36,13 @@ def main():
     print(f'test data class number:\n {test_data[64].value_counts()}')
 
     ######################## STEP 2 : apply standard models ########################
-    """
+    
     model2test = {'svm' : (classifier.SVMModel(train_data, test_data, preprocessing.basic_preprocessing), {"model__kernel": ["rbf"], "model__C": [0.1, 1, 10]}),
                     'rf' : (classifier.random_forest_model(train_data, test_data, preprocessing.basic_preprocessing), {"model__n_estimators" : [100], "model__criterion": ['gini', 'entropy'], "model__max_depth":[2]}),
                     'logistic regression' : (classifier.logistic_regression(train_data, test_data, preprocessing.basic_preprocessing), {'model__penalty':['l1', 'l2'], 'model__C':[0.1, 1]}), 
                     'lda': (classifier.lda(train_data, test_data, preprocessing.basic_preprocessing), {}), 
-                    'qda': (classifier.qda(train_data, test_data, preprocessing.basic_preprocessing), {})}
+                    'qda': (classifier.qda(train_data, test_data, preprocessing.basic_preprocessing), {}), 
+                    'sk_MLP': (classifier.sk_NN(train_data, test_data, preprocessing.basic_preprocessing), {'model__hidden_layer_sizes':[(10), (32, 16, 8)], 'model__alpha':[0, 0.1], 'model__max_iter':[100], 'model__batch_size':[100]})}
 
     for name, (model, param_grid) in model2test.items():
         model.grid_search(param_grid, n_fold=2)
@@ -52,7 +53,7 @@ def main():
 
     # model.load('/home/yunfei/Desktop/ml-for-medical-data/saved_models/SVM')
     # model.load('saved_models/SVM')
-    """
+    
     ######################## STEP 3 : apply deep models ########################
     model = NN.NN_classifier(train_data, test_data, 64, [32, 16, 8], 4)
     name = 'MLP'

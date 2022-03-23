@@ -1,4 +1,5 @@
 from sklearn import preprocessing
+from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
 from sklearn.preprocessing import StandardScaler
@@ -30,7 +31,6 @@ class model():
         """Grid search on train dataset"""
         pipe = Pipeline(steps=[("model", self.model)])
         # Parameters of pipelines can be set using ‘__’ separated parameter names:
-        pipe.fit()
         search = GridSearchCV(pipe, parameters, n_jobs=-1, cv=n_fold, scoring=scoring)
         search.fit(self.train_X, self.train_y)
         
@@ -112,6 +112,14 @@ class qda(model):
         super().__init__(train_data, test_data, preprocess)
 
         self.model = QuadraticDiscriminantAnalysis()
+
+class sk_NN(model):
+    def __init__(self, train_data, test_data, preprocess):
+        """
+        https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPClassifier.html#sklearn.neural_network.MLPClassifier"""
+        super().__init__(train_data, test_data, preprocess)
+
+        self.model = MLPClassifier(random_state=0)
 
 if __name__=='__main_':
     pass
