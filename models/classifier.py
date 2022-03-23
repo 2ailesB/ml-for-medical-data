@@ -8,9 +8,12 @@ from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 import pickle
+
+from utils import format_paramsdict
 
 class model():
     def __init__(self, train_data, test_data, preprocess):
@@ -82,10 +85,13 @@ class SVMModel(model):
         return search.best_estimator_
 
     def visualisation(self, path, metrics='mean_test_score'):
-        'save figure of cv'
+        """save figure of cv"""
 
         fig = plt.figure()
         scores = [x for x in self.gs_result.cv_results_[metrics]]
+        params_values = [y for y in self.gs_result.cv_results_['params']]
+        # params_values = format_paramsdict(params_values)
+        plt.xticks(np.arange(len(params_values)), params_values)
         plt.plot(scores)
         plt.xlabel('parameters')
         plt.ylabel(metrics)
@@ -94,8 +100,6 @@ class SVMModel(model):
         plt.clf()
 
         return None
-
-
 
 if __name__=='__main_':
     pass
