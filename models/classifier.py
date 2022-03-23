@@ -72,11 +72,11 @@ class SVMModel(model):
 
         self.model = SVC()
 
-    def grid_search(self, parameters, n_fold):
+    def grid_search(self, parameters, n_fold, scoring='accuracy'):
         """Grid search on train dataset"""
         pipe = Pipeline(steps=[("model", self.model)])
         # Parameters of pipelines can be set using ‘__’ separated parameter names:
-        search = GridSearchCV(pipe, parameters, n_jobs=-1, cv=n_fold)
+        search = GridSearchCV(pipe, parameters, n_jobs=-1, cv=n_fold, scoring=scoring)
         search.fit(self.train_X, self.train_y)
         
         self.model = search.best_estimator_
@@ -85,7 +85,12 @@ class SVMModel(model):
         return search.best_estimator_
 
     def visualisation(self, path, metrics='mean_test_score'):
-        """save figure of cv"""
+        """save figure of cv
+            metrics (string) : to be chosen among https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html
+            https://scikit-learn.org/stable/modules/model_evaluation.html#scoring
+            TODO 2 visualization functions needed depending on if we use sk metrics or custom metrics that we need to recompute ? 
+            Not necessarly : implement custom metrics as in https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter
+        """
 
         fig = plt.figure()
         scores = [x for x in self.gs_result.cv_results_[metrics]]
