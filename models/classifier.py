@@ -1,16 +1,14 @@
 from sklearn import preprocessing
-
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis, QuadraticDiscriminantAnalysis
 
 import matplotlib.pyplot as plt
 import numpy as np
-
-
 import pickle
 
 from utils import format_paramsdict
@@ -100,7 +98,27 @@ class SVMModel(model):
         https://scikit-learn.org/stable/modules/svm.html#shrinking-svm"""
         super().__init__(train_data, test_data, preprocess)
 
-        self.model = SVC()
+        self.model = SVC(random_state=0)
+
+class logistic_regression(model):
+    def __init__(self, train_data, test_data, preprocess):
+        """
+        https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html"""
+        super().__init__(train_data, test_data, preprocess)
+
+        self.model = LogisticRegression(random_state=0, solver='saga')
+
+class lda(model):
+    def __init__(self, train_data, test_data, preprocess):
+        super().__init__(train_data, test_data, preprocess)
+
+        self.model = LinearDiscriminantAnalysis()
+
+class qda(model):
+    def __init__(self, train_data, test_data, preprocess):
+        super().__init__(train_data, test_data, preprocess)
+
+        self.model = QuadraticDiscriminantAnalysis()
 
 if __name__=='__main_':
     pass

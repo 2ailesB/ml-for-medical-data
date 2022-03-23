@@ -31,7 +31,10 @@ def main():
 
     ######################## STEP 2 : apply standard models ########################
     model2test = {'svm' : (classifier.SVMModel(train_data, test_data, preprocessing.basic_preprocessing), {"model__kernel": ["rbf"], "model__C": [0.1, 1, 10]}),
-                    'rf' : (classifier.random_forest_model(train_data, test_data, preprocessing.basic_preprocessing), {"model__n_estimators" : [100], "model__criterion": ['gini', 'entropy'], "model__max_depth":[2]})}
+                    'rf' : (classifier.random_forest_model(train_data, test_data, preprocessing.basic_preprocessing), {"model__n_estimators" : [100], "model__criterion": ['gini', 'entropy'], "model__max_depth":[2]}),
+                    'logistic regression' : (classifier.logistic_regression(train_data, test_data, preprocessing.basic_preprocessing), {'model__penalty':['l1', 'l2'], 'model__C':[0.1, 1]}), 
+                    'lda': (classifier.lda(train_data, test_data, preprocessing.basic_preprocessing), {}), 
+                    'qda': (classifier.qda(train_data, test_data, preprocessing.basic_preprocessing), {})}
 
     for name, (model, param_grid) in model2test.items():
         model.grid_search(param_grid, n_fold=2)
