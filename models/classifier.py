@@ -30,6 +30,7 @@ class model():
         """Grid search on train dataset"""
         pipe = Pipeline(steps=[("model", self.model)])
         # Parameters of pipelines can be set using ‘__’ separated parameter names:
+        pipe.fit()
         search = GridSearchCV(pipe, parameters, n_jobs=-1, cv=n_fold, scoring=scoring)
         search.fit(self.train_X, self.train_y)
         
