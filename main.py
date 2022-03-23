@@ -1,15 +1,21 @@
-from datetime import date
+import datetime
 import os
-
+from nbformat import write
 import numpy as np
 import pandas as pd
+
 from sklearn.model_selection import train_test_split
+
+import torch
+import torch.nn as nn
+from torch.utils.tensorboard import SummaryWriter
 
 from preprocessing import inout
 from preprocessing import formatting
 from preprocessing import preprocessing
 
 from models import classifier
+from models import NN
 
 from metrics.scores import accuracy
 
@@ -30,6 +36,7 @@ def main():
     print(f'test data class number:\n {test_data[64].value_counts()}')
 
     ######################## STEP 2 : apply standard models ########################
+    """
     model2test = {'svm' : (classifier.SVMModel(train_data, test_data, preprocessing.basic_preprocessing), {"model__kernel": ["rbf"], "model__C": [0.1, 1, 10]}),
                     'rf' : (classifier.random_forest_model(train_data, test_data, preprocessing.basic_preprocessing), {"model__n_estimators" : [100], "model__criterion": ['gini', 'entropy'], "model__max_depth":[2]}),
                     'logistic regression' : (classifier.logistic_regression(train_data, test_data, preprocessing.basic_preprocessing), {'model__penalty':['l1', 'l2'], 'model__C':[0.1, 1]}), 
@@ -45,6 +52,18 @@ def main():
 
     # model.load('/home/yunfei/Desktop/ml-for-medical-data/saved_models/SVM')
     # model.load('saved_models/SVM')
+    """
+    ######################## STEP 3 : apply deep models ########################
+    model = NN.NN_classifier(train_data, test_data, 64, [32, 16, 8], 4)
+    name = 'MLP'
+    lr, epochs = 0.01, 10
+    start_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    writer = SummaryWriter('figures/runs/' + start_time )
+    model.fit(nn.CrossEntropyLoss(), lr, epochs, 100, writer)
+    pred = model.predict()
+    model.save(lr, epochs, f'saved_models/{name}', '')
+    # model.visualisation(f'figures/{name}.png')
+    print(f'{name} model after CV grid search has accuracy of {model.score(accuracy)}')
 
 
 if __name__ == '__main__':

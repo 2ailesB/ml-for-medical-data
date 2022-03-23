@@ -1,13 +1,23 @@
 import torch
 import torch.nn.functional as F
 import torch.nn as nn
+import torch.utils.tensorboard
+from torch.utils.data import TensorDataset, DataLoader
 
 import os
 
 
-class NN_classifier():
-    def __init__(self, n_in, layers, n_out, activation = nn.ReLU(), final_activation = None, p=0, batchnorm=True) -> None:
+class NN_classifier(nn.Module):
+    def __init__(self, train_data, test_data, n_in, layers, n_out, activation = nn.ReLU(), final_activation = None, p=0, batchnorm=True) -> None:
         # https://stackoverflow.com/questions/46141690/how-to-write-a-pytorch-sequential-model
+        super().__init__()
+
+        self.train_X = torch.Tensor(train_data.iloc[:, 0:64].to_numpy())
+        self.train_y = torch.Tensor(train_data.iloc[:, 64].to_numpy())
+
+        self.test_X = torch.Tensor(test_data.iloc[:, 0:64].to_numpy())
+        self.test_y = torch.Tensor(test_data.iloc[:, 64].to_numpy())
+
         layerlist = []
         for i in layers:
             layerlist.append(nn.Linear(n_in, i))  # n_in input neurons connected to i number of output neurons
@@ -25,20 +35,40 @@ class NN_classifier():
 
         self.model = nn.Sequential(*layerlist)
 
+        self.state = {}
+
     def forward(self, x):
         return self.model(x)
 
-    def fit(self, train_data, loss, lr, epochs):
+    def fit(self, loss, lr, epochs, batch_size, writer):
+        # one_hot_y = F.one_hot(self.train_y.to(torch.int64))
+        train_dataset = TensorDataset(self.train_X, self.train_y.to(torch.long)) # create your datset
+        train_dataloader = DataLoader(train_dataset, batch_size=batch_size) # create your dataloader
+        n_loader = len(train_dataloader)
+
         optim = torch.optim.Adam(self.model.parameters(), lr = lr)
         for epoch in range(epochs):
-            for X, y in train_data:
+            losses = []
+            for idx, (X, y) in enumerate(train_dataloader):
                 yhat = self.model(X)
                 optim.zero_grad()
                 l = loss(yhat, y)
-                optim.backward()
+                l.backward()
                 optim.step()
+                losses.append(l)
+
+            writer.add_scalar('loss', torch.Tensor(losses).mean(), epoch)
             
         return self.model
+
+    def score(self, metrics):
+        """Score on test dataset"""
+        y_pred = self.predict()
+        return metrics(y_pred, self.test_y)
+
+    def predict(self):
+        """Prediction with optimal parameters"""
+        return torch.argmax(self.model(self.test_X), dim=1)
 
     def save(self, lr, n, ckpt_save_path, tag):
         self.state['lr'] = lr
@@ -51,6 +81,12 @@ class NN_classifier():
     def load(self, ckpt_path):
         state = torch.load(ckpt_path)
         self.load_state_dict(state['state_dict'])
+
+    def visualisation(self):
+        pass
+
+    def grid_search(self):
+        pass
 
 
 

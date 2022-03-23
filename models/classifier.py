@@ -39,14 +39,6 @@ class model():
 
         return search.best_estimator_
 
-    def score(self):
-        """Score on test dataset"""
-        pass
-
-    def predict(self):
-        """Prediction with optimal parameters"""
-        pass
-
     def save(self, filename):
         """Saved trained model"""
         pickle.dump(self.model, open(filename, 'wb'))
