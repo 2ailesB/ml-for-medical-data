@@ -28,9 +28,17 @@ class model():
         self.model = None
         self.gs_result = None
     
-    def grid_search(self, parameters):
+    def grid_search(self, parameters, n_fold, scoring='accuracy'):
         """Grid search on train dataset"""
-        pass
+        pipe = Pipeline(steps=[("model", self.model)])
+        # Parameters of pipelines can be set using ‘__’ separated parameter names:
+        search = GridSearchCV(pipe, parameters, n_jobs=-1, cv=n_fold, scoring=scoring)
+        search.fit(self.train_X, self.train_y)
+        
+        self.model = search.best_estimator_
+        self.gs_result = search
+
+        return search.best_estimator_
 
     def score(self):
         """Score on test dataset"""
@@ -56,34 +64,6 @@ class model():
         """Prediction with optimal parameters"""
         return self.model.predict(self.test_X)
 
-    def visualisation(self):
-        """plot metrics from results"""
-        pass
-
-class random_forest_model(model):
-    def __init__(self, train_data, test_data, preprocess, nfold):
-        super().__init__(train_data, test_data, preprocess, nfold, hy)
-        self.model = RandomForestClassifier(random_state=0)
-        
-
-class SVMModel(model):
-    def __init__(self, train_data, test_data, preprocess):
-        super().__init__(train_data, test_data, preprocess)
-
-        self.model = SVC()
-
-    def grid_search(self, parameters, n_fold, scoring='accuracy'):
-        """Grid search on train dataset"""
-        pipe = Pipeline(steps=[("model", self.model)])
-        # Parameters of pipelines can be set using ‘__’ separated parameter names:
-        search = GridSearchCV(pipe, parameters, n_jobs=-1, cv=n_fold, scoring=scoring)
-        search.fit(self.train_X, self.train_y)
-        
-        self.model = search.best_estimator_
-        self.gs_result = search
-
-        return search.best_estimator_
-
     def visualisation(self, path, metrics='mean_test_score'):
         """save figure of cv
             metrics (string) : to be chosen among https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html
@@ -105,6 +85,22 @@ class SVMModel(model):
         plt.clf()
 
         return None
+
+class random_forest_model(model):
+    def __init__(self, train_data, test_data, preprocess):
+        """
+        https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html?highlight=random%20classifier#sklearn.ensemble.RandomForestClassifier"""
+        super().__init__(train_data, test_data, preprocess)
+
+        self.model = RandomForestClassifier(random_state=0)
+
+class SVMModel(model):
+    def __init__(self, train_data, test_data, preprocess):
+        """
+        https://scikit-learn.org/stable/modules/svm.html#shrinking-svm"""
+        super().__init__(train_data, test_data, preprocess)
+
+        self.model = SVC()
 
 if __name__=='__main_':
     pass

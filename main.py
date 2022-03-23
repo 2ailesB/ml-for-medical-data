@@ -30,16 +30,19 @@ def main():
     print(f'test data class number:\n {test_data[64].value_counts()}')
 
     ######################## STEP 2 : apply standard models ########################
-    model = classifier.SVMModel(train_data, test_data, preprocessing.basic_preprocessing)
-    param_grid={"model__kernel": ["rbf"], "model__C": [0.1, 1, 10]}
-    model.grid_search(param_grid, n_fold=2)
-    pred = model.predict()
-    model.save('saved_models/SVM')
+    model2test = {'svm' : (classifier.SVMModel(train_data, test_data, preprocessing.basic_preprocessing), {"model__kernel": ["rbf"], "model__C": [0.1, 1, 10]}),
+                    'rf' : (classifier.random_forest_model(train_data, test_data, preprocessing.basic_preprocessing), {"model__n_estimators" : [100], "model__criterion": ['gini', 'entropy'], "model__max_depth":[2]})}
+
+    for name, (model, param_grid) in model2test.items():
+        model.grid_search(param_grid, n_fold=2)
+        pred = model.predict()
+        model.save(f'saved_models/{name}')
+        model.visualisation(f'figures/{name}.png')
+        print(f'{name} model after CV grid search has accuracy of {model.score(accuracy)}')
 
     # model.load('/home/yunfei/Desktop/ml-for-medical-data/saved_models/SVM')
-    model.load('saved_models/SVM')
-    print(model.score(accuracy))
-    model.visualisation('figures/svm.png')
+    # model.load('saved_models/SVM')
+
 
 if __name__ == '__main__':
     main()
