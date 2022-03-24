@@ -1,4 +1,5 @@
 from sklearn import preprocessing
+from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
 from sklearn.preprocessing import StandardScaler
@@ -10,6 +11,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis, QuadraticDiscriminantAnalysis
 
 from sklearn.multiclass import OneVsRestClassifier
 import  sklearn.metrics as metrics
@@ -23,7 +25,7 @@ import matplotlib.pyplot as plt
 from itertools import cycle
 
 import pickle
-
+from utils import format_paramsdict
 # setup plot details
 colors = cycle(["navy", "turquoise", "darkorange", "cornflowerblue", "teal"])
 
@@ -38,21 +40,16 @@ class Model(object):
         self.preprocess = preprocess
         self.parameter_optimal = {}
         self.model = None
-        self.gs_result = None
         self.metric = metric
         self.search = None
 
-    def bla1(self):
-        print('desole')
     
     def grid_search(self, parameters, n_fold):
         """Grid search on train dataset"""
         # Parameters of pipelines can be set using ‘__’ separated parameter names:
-        if self.metric == 'f1_micro':
-            search = GridSearchCV(self.pipe, parameters, n_jobs=-1, cv=n_fold, scoring=self.metric)
+        search = GridSearchCV(self.pipe, parameters, n_jobs=-1, cv=n_fold, scoring=self.metric)
         search.fit(self.train_X, self.train_y)
         self.model = search.best_estimator_
-        self.gs_result = search
         self.search = search
         return self.search
 
@@ -150,36 +147,83 @@ class Model(object):
     def score(self, metrics):
         """Score on test dataset"""
         y_pred = self.predict()
-        return metrics(y_pred, self.test_y)
+        return metrics(y_pred, self.test_y, average='micro')
 
     def predict(self):
         """Prediction with optimal parameters"""
         return self.model.predict(self.test_X)
 
-    def visualisation(self):
-        """plot metrics from results"""
-        pass
+    def visualisation(self, path, metrics='mean_test_score'):
+        """save figure of cv
+            metrics (string) : to be chosen among https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html
+            https://scikit-learn.org/stable/modules/model_evaluation.html#scoring
+            TODO 2 visualization functions needed depending on if we use sk metrics or custom metrics that we need to recompute ? 
+            Not necessarly : implement custom metrics as in https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter
+        """
+
+        fig = plt.figure()
+        scores = [x for x in self.search.cv_results_[metrics]]
+        params_values = [y for y in self.search.cv_results_['params']]
+        # params_values = format_paramsdict(params_values)
+        plt.xticks(np.arange(len(params_values)), params_values)
+        plt.plot(scores)
+        plt.xlabel('parameters')
+        plt.ylabel(metrics)
+        plt.title(f'{metrics} for models tested during grid search')
+        plt.savefig(path)
+        plt.clf()
+
+        return None
 
 
 class SVMModel(Model):
     def __init__(self, train_data, test_data, preprocess, metric='f1_micro'):
+        """
+        https://scikit-learn.org/stable/modules/svm.html#shrinking-svm"""
         super().__init__(train_data, test_data, preprocess, metric)
         self.model = SVC(random_state=0)
         self.pipe = Pipeline(steps=[("model", self.model)])
 
 
 class RFModel(Model):
+    """
+        https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html?highlight=random%20classifier#sklearn.ensemble.RandomForestClassifier"""
     def __init__(self, train_data, test_data, preprocess, metric='f1_micro'):
         super().__init__(train_data, test_data, preprocess, metric)
         self.model = RandomForestClassifier(random_state=0)
         self.pipe = Pipeline(steps=[("model", self.model)])
 
-
 class LRModel(Model):
+    """
+        https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html"""
     def __init__(self, train_data, test_data, preprocess, metric='f1_micro'):
         super().__init__(train_data, test_data, preprocess, metric)
         self.model = LogisticRegression(random_state=0, solver='saga')
         self.pipe = Pipeline(steps=[("model", self.model)])
+
+
+class lda(Model):
+    def __init__(self, train_data, test_data, preprocess, metric='f1_micro'):
+        super().__init__(train_data, test_data, preprocess, metric)
+        self.model = LinearDiscriminantAnalysis()
+        self.pipe = Pipeline(steps=[("model", self.model)])
+
+class qda(Model):
+    def __init__(self, train_data, test_data, preprocess, metric='f1_micro'):
+        super().__init__(train_data, test_data, preprocess, metric)
+        self.model = QuadraticDiscriminantAnalysis()
+        self.pipe = Pipeline(steps=[("model", self.model)])
+
+
+
+class sk_NN(Model):
+    def __init__(self, train_data, test_data, preprocess, metric='f1_micro'):
+        """
+        https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPClassifier.html#sklearn.neural_network.MLPClassifier"""
+        super().__init__(train_data, test_data, preprocess, metric)
+        self.model = MLPClassifier(random_state=0)
+        self.pipe = Pipeline(steps=[("model", self.model)])
+
 
 if __name__=='__main_':
     pass
