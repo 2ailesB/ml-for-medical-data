@@ -56,6 +56,20 @@ class Model(object):
         self.search = search
         return self.search
 
+
+    def visualisation(self, path, metrics='mean_test_score'):
+        'save figure of cv'
+
+        fig = plt.figure()
+        scores = [x for x in self.gs_result.cv_results_[metrics]]
+        plt.plot(scores)
+        plt.xlabel('parameters')
+        plt.ylabel(metrics)
+        plt.title(f'{metrics} for models tested during grid search')
+        plt.savefig(path)
+        plt.clf()
+        return None
+
     def evaluation(self, name):
         """Result evaluatio on test dataset with optimal parameters after grids search"""
         train_Y = label_binarize(self.train_y, classes=[0, 1, 2, 3])
@@ -147,31 +161,11 @@ class Model(object):
         pass
 
 
-class random_forest_model(Model):
-    def __init__(self, train_data, test_data, preprocess, nfold):
-        super().__init__(train_data, test_data, preprocess, nfold)
-        self.model = RandomForestClassifier(random_state=0)
-        
-
 class SVMModel(Model):
     def __init__(self, train_data, test_data, preprocess, metric='f1_micro'):
         super().__init__(train_data, test_data, preprocess, metric)
         self.model = SVC(random_state=0)
         self.pipe = Pipeline(steps=[("model", self.model)])
-
-
-    def visualisation(self, path, metrics='mean_test_score'):
-        'save figure of cv'
-
-        fig = plt.figure()
-        scores = [x for x in self.gs_result.cv_results_[metrics]]
-        plt.plot(scores)
-        plt.xlabel('parameters')
-        plt.ylabel(metrics)
-        plt.title(f'{metrics} for models tested during grid search')
-        plt.savefig(path)
-        plt.clf()
-        return None
 
 
 class RFModel(Model):
