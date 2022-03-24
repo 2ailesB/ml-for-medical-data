@@ -14,7 +14,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis, QuadraticDiscriminantAnalysis
 
 from sklearn.multiclass import OneVsRestClassifier
-import  sklearn.metrics as metrics
+import sklearn.metrics as metrics
 from sklearn.metrics import PrecisionRecallDisplay
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import average_precision_score
@@ -147,7 +147,7 @@ class Model(object):
     def score(self, metrics):
         """Score on test dataset"""
         y_pred = self.predict()
-        return metrics(y_pred, self.test_y, average='micro')
+        return metrics(y_pred, self.test_y)
 
     def predict(self):
         """Prediction with optimal parameters"""
@@ -157,8 +157,7 @@ class Model(object):
         """save figure of cv
             metrics (string) : to be chosen among https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html
             https://scikit-learn.org/stable/modules/model_evaluation.html#scoring
-            TODO 2 visualization functions needed depending on if we use sk metrics or custom metrics that we need to recompute ? 
-            Not necessarly : implement custom metrics as in https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter
+            implement custom metrics as in https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter
         """
 
         fig = plt.figure()
@@ -183,7 +182,6 @@ class SVMModel(Model):
         super().__init__(train_data, test_data, preprocess, metric)
         self.model = SVC(random_state=0)
         self.pipe = Pipeline(steps=[("model", self.model)])
-
 
 class RFModel(Model):
     """
@@ -213,8 +211,6 @@ class qda(Model):
         super().__init__(train_data, test_data, preprocess, metric)
         self.model = QuadraticDiscriminantAnalysis()
         self.pipe = Pipeline(steps=[("model", self.model)])
-
-
 
 class sk_NN(Model):
     def __init__(self, train_data, test_data, preprocess, metric='f1_micro'):

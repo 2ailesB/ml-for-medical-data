@@ -9,6 +9,7 @@ from sklearn.metrics import f1_score
 import torch
 import torch.nn as nn
 from torch.utils.tensorboard import SummaryWriter
+from metrics.custom_metrics import accuracy, f1_micro
 
 from preprocessing import inout
 from preprocessing import formatting
@@ -16,9 +17,6 @@ from preprocessing import preprocessing
 
 from models import classifier
 from models import NN
-
-
-
 
 
 def main():
@@ -49,7 +47,7 @@ def main():
         pred = model.predict()
         model.save(f'saved_models/{name}')
         model.visualisation(f'figures/{name}.png')
-        print(f'{name} model after CV grid search has accuracy of {model.score(f1_score)}')
+        print(f'{name} model after CV grid search has accuracy of {model.score(f1_micro)}')
 
     # model.load('/home/yunfei/Desktop/ml-for-medical-data/saved_models/SVM')
     # model.load('saved_models/SVM')
@@ -64,7 +62,7 @@ def main():
     pred = model.predict()
     model.save(lr, epochs, f'saved_models/{name}', '')
     # model.visualisation(f'figures/{name}.png')
-    print(f'{name} model after CV grid search has accuracy of {model.score(f1_score)}')
+    print(f'{name} model after CV grid search has accuracy of {model.score(accuracy)}')
 
 
 if __name__ == '__main__':
