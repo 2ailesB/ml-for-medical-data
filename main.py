@@ -34,7 +34,7 @@ def main():
     print(f'test data class number:\n {test_data[64].value_counts()}')
 
     ######################## STEP 2 : apply standard models ########################
-    
+    """
     model2test = {'svm' : (classifier.SVMModel(train_data, test_data, preprocessing.basic_preprocessing), {"model__kernel": ["rbf"], "model__C": [0.1, 1, 10]}),
                     'rf' : (classifier.RFModel(train_data, test_data, preprocessing.basic_preprocessing), {"model__n_estimators" : [100], "model__criterion": ['gini', 'entropy'], "model__max_depth":[2]}),
                     'logistic regression' : (classifier.LRModel(train_data, test_data, preprocessing.basic_preprocessing), {'model__penalty':['l1', 'l2'], 'model__C':[0.1, 1]}), 
@@ -55,6 +55,17 @@ def main():
     ######################## STEP 3 : apply deep models ########################
     model = NN.NN_classifier(train_data, test_data, 64, [32, 16, 8], 4)
     name = 'MLP'
+    lr, epochs, batch_size = 1e-4, 100, 100
+    start_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    writer = SummaryWriter('figures/runs/' + start_time )
+    model.fit(nn.CrossEntropyLoss(), lr, epochs, batch_size, writer)
+    pred = model.predict()
+    model.save(lr, epochs, f'saved_models/{name}', '')
+    # model.visualisation(f'figures/{name}.png')
+    print(f'{name} model after CV grid search has accuracy of {model.score(accuracy)}')
+    """
+    model = NN.LSTM_classifier(train_data, test_data, 8, [2, 1], [15, 15])
+    name = 'LSTM'
     lr, epochs, batch_size = 1e-4, 100, 100
     start_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     writer = SummaryWriter('figures/runs/' + start_time )
