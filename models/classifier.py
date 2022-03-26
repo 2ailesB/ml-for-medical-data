@@ -6,8 +6,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import label_binarize
 from sklearn.pipeline import make_pipeline
 
-
-
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
@@ -26,6 +24,7 @@ from itertools import cycle
 
 import pickle
 from utils import format_paramsdict
+from .NN import LSTM_classifier
 # setup plot details
 colors = cycle(["navy", "turquoise", "darkorange", "cornflowerblue", "teal"])
 
@@ -41,7 +40,6 @@ class Model(object):
         self.parameter_optimal = {}
         self.model = None
         self.metric = metric
-        self.search = None
 
     
     def grid_search(self, parameters, n_fold):
@@ -66,6 +64,7 @@ class Model(object):
         plt.savefig(path)
         plt.clf()
         return None
+
 
     def evaluation(self, name):
         """Result evaluatio on test dataset with optimal parameters after grids search"""
@@ -180,7 +179,7 @@ class SVMModel(Model):
         """
         https://scikit-learn.org/stable/modules/svm.html#shrinking-svm"""
         super().__init__(train_data, test_data, preprocess, metric)
-        self.model = SVC(random_state=0)
+        self.model = SVC(random_state=0, probability=True)
         self.pipe = Pipeline(steps=[("model", self.model)])
 
 class RFModel(Model):
@@ -208,7 +207,7 @@ class lda(Model):
 
 class qda(Model):
     def __init__(self, train_data, test_data, preprocess, metric='f1_micro'):
-        super().__init__(train_data, test_data, preprocess, metric)
+        super().__init__(trainstart_time_data, test_data, preprocess, metric)
         self.model = QuadraticDiscriminantAnalysis()
         self.pipe = Pipeline(steps=[("model", self.model)])
 
@@ -220,6 +219,14 @@ class sk_NN(Model):
         self.model = MLPClassifier(random_state=0)
         self.pipe = Pipeline(steps=[("model", self.model)])
 
+class LSTM(Model):
+    def __init__(self, train_data, test_data, preprocess, metric='f1_micro'):
+        """
+        https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPClassifier.html#sklearn.neural_network.MLPClassifier"""
+        
+        super().__init__(train_data, test_data, preprocess, metric)
+        self.model = LSTM_classifier(random_state=0)
+        self.pipe = Pipeline(steps=[("model", self.model)])
 
 if __name__=='__main_':
     pass
