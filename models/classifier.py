@@ -24,7 +24,7 @@ from itertools import cycle
 
 import pickle
 from utils import format_paramsdict
-from .NN import LSTM_classifier
+from .NN import LSTM_classifier2
 # setup plot details
 colors = cycle(["navy", "turquoise", "darkorange", "cornflowerblue", "teal"])
 
@@ -222,7 +222,7 @@ class sk_NN(Model):
 class LSTM(Model):
     def __init__(self, train_data, test_data, preprocess, metric='f1_micro'):
         """
-        https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPClassifier.html#sklearn.neural_network.MLPClassifier"""
+        https://pytorch.org/docs/stable/generated/torch.nn.LSTM.html"""
         
         super().__init__(train_data, test_data, preprocess, metric)
         self.model = LSTM_classifier(random_state=0)
