@@ -84,7 +84,7 @@ class NN_classifier(nn.Module):
                 optim.step()
                 losses.append(l)
             writer.add_scalar('train loss', torch.Tensor(losses).mean(), epoch)
-            # writer.add_scalar('train accuracy', accuracy(yhat, y.reshape(y.shape[0], 1)), epoch)
+            # writer.add_scalar('train accuracy', accuracy(yhat, y.reshape(y.shape[0], 1)), epoch)# TODO : add accuracy
 
             if test_loop:
                 with torch.no_grad():
@@ -94,7 +94,7 @@ class NN_classifier(nn.Module):
                         l = loss(yhat, y)
                         losses.append(l)
                     writer.add_scalar('test loss', torch.Tensor(losses).mean(), epoch)
-                    # writer.add_scalar('test accuracy', accuracy(yhat, y.reshape(y.shape[0], 1)), epoch) # TODO : add accuracy
+                    writer.add_scalar('test accuracy', self.score(accuracy), epoch) 
 
         return self.model
 
@@ -261,7 +261,7 @@ class LSTM_classifier2(nn.Module):
                 optim.step()
                 losses.append(l)
             writer.add_scalar('train loss', torch.Tensor(losses).mean(), epoch)
-            # writer.add_scalar('train accuracy', accuracy(self.predict(X), y.reshape(y.shape[0], 1)), epoch)
+            # TODO : add accuracy
 
             if test_loop:
                 with torch.no_grad():
@@ -273,18 +273,19 @@ class LSTM_classifier2(nn.Module):
                         l = loss(yhat, y)
                         losses.append(l)
                     writer.add_scalar('test loss', torch.Tensor(losses).mean(), epoch)
-                    # writer.add_scalar('test accuracy', accuracy(self.predict(X), y.reshape(y.shape[0], 1)), epoch)
+                    writer.add_scalar('test accuracy', self.score(accuracy), epoch)
 
         return self.lstm
 
     def score(self, metrics):
         """Score on test dataset"""
         y_pred = self.predict()
-        return metrics(y_pred, self.test_y)
+        return metrics(y_pred, self.test_y.reshape((self.test_y.shape[0], 1)))
 
     def predict(self):
         """Prediction with optimal parameters"""
-        return torch.argmax(self.lstm(self.test_X), dim=1)
+        print(self.lstm(self.test_X)[0].shape)
+        return torch.argmax(self.lstm(self.test_X)[0], dim=1)
 
     def predict_proba(self, x):
         """Prediction of probability for each class with softmax"""
