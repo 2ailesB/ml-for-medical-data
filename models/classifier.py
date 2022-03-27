@@ -180,7 +180,8 @@ class SVMModel(Model):
         https://scikit-learn.org/stable/modules/svm.html#shrinking-svm"""
         super().__init__(train_data, test_data, preprocess, metric)
         self.model = SVC(random_state=0, probability=True)
-        self.pipe = Pipeline(steps=[("model", self.model)])
+        self.pipe = Pipeline(steps=[("preprocess", preprocess), ("model", self.model)])
+        # self.pipe = Pipeline(steps=[("model", self.model)])
 
 class RFModel(Model):
     """
@@ -188,7 +189,7 @@ class RFModel(Model):
     def __init__(self, train_data, test_data, preprocess, metric='f1_micro'):
         super().__init__(train_data, test_data, preprocess, metric)
         self.model = RandomForestClassifier(random_state=0)
-        self.pipe = Pipeline(steps=[("model", self.model)])
+        self.pipe = Pipeline(steps=[("preprocess", preprocess), ("model", self.model)])
 
 class LRModel(Model):
     """
@@ -196,20 +197,20 @@ class LRModel(Model):
     def __init__(self, train_data, test_data, preprocess, metric='f1_micro'):
         super().__init__(train_data, test_data, preprocess, metric)
         self.model = LogisticRegression(random_state=0, solver='saga')
-        self.pipe = Pipeline(steps=[("model", self.model)])
+        self.pipe = Pipeline(steps=[("preprocess", preprocess), ("model", self.model)])
 
 
 class lda(Model):
     def __init__(self, train_data, test_data, preprocess, metric='f1_micro'):
         super().__init__(train_data, test_data, preprocess, metric)
         self.model = LinearDiscriminantAnalysis()
-        self.pipe = Pipeline(steps=[("model", self.model)])
+        self.pipe = Pipeline(steps=[("preprocess", preprocess), ("model", self.model)])
 
 class qda(Model):
     def __init__(self, train_data, test_data, preprocess, metric='f1_micro'):
-        super().__init__(trainstart_time_data, test_data, preprocess, metric)
+        super().__init__(train_data, test_data, preprocess, metric)
         self.model = QuadraticDiscriminantAnalysis()
-        self.pipe = Pipeline(steps=[("model", self.model)])
+        self.pipe = Pipeline(steps=[("preprocess", preprocess), ("model", self.model)])
 
 class sk_NN(Model):
     def __init__(self, train_data, test_data, preprocess, metric='f1_micro'):
@@ -217,7 +218,7 @@ class sk_NN(Model):
         https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPClassifier.html#sklearn.neural_network.MLPClassifier"""
         super().__init__(train_data, test_data, preprocess, metric)
         self.model = MLPClassifier(random_state=0)
-        self.pipe = Pipeline(steps=[("model", self.model)])
+        self.pipe = Pipeline(steps=[("preprocess", preprocess), ("model", self.model)])
 
 class LSTM(Model):
     def __init__(self, train_data, test_data, preprocess, metric='f1_micro'):
@@ -225,8 +226,8 @@ class LSTM(Model):
         https://pytorch.org/docs/stable/generated/torch.nn.LSTM.html"""
         
         super().__init__(train_data, test_data, preprocess, metric)
-        self.model = LSTM_classifier(random_state=0)
-        self.pipe = Pipeline(steps=[("model", self.model)])
+        self.model = LSTM_classifier2(random_state=0)
+        self.pipe = Pipeline(steps=[("preprocess", preprocess), ("model", self.model)])
 
 if __name__=='__main_':
     pass

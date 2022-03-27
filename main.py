@@ -34,20 +34,20 @@ def main():
     print(f'test data class number:\n {test_data[64].value_counts()}')
 
     ######################## STEP 2 : apply standard models ########################
-    """
-    model2test = {'svm' : (classifier.SVMModel(train_data, test_data, preprocessing.basic_preprocessing), {"model__kernel": ["rbf"], "model__C": [0.1, 1, 10]}),
-                    'rf' : (classifier.RFModel(train_data, test_data, preprocessing.basic_preprocessing), {"model__n_estimators" : [100], "model__criterion": ['gini', 'entropy'], "model__max_depth":[2]}),
-                    'logistic regression' : (classifier.LRModel(train_data, test_data, preprocessing.basic_preprocessing), {'model__penalty':['l1', 'l2'], 'model__C':[0.1, 1]}), 
-                    'lda': (classifier.lda(train_data, test_data, preprocessing.basic_preprocessing), {}), 
-                    'qda': (classifier.qda(train_data, test_data, preprocessing.basic_preprocessing), {}), 
-                    'sk_MLP': (classifier.sk_NN(train_data, test_data, preprocessing.basic_preprocessing), {'model__hidden_layer_sizes':[(10), (32, 16, 8)], 'model__alpha':[0, 0.1], 'model__max_iter':[100], 'model__batch_size':[100]})}
+    
+    # model2test = {'svm' : (classifier.SVMModel(train_data, test_data, preprocessing.pca_preprocessing()), {"preprocess__n_components": [None], "model__kernel": ["rbf"], "model__C": [0.1, 1, 10]}),
+    #                 'rf' : (classifier.RFModel(train_data, test_data, preprocessing.pca_preprocessing()), {"model__n_estimators" : [100], "model__criterion": ['gini', 'entropy'], "model__max_depth":[2]}),
+    #                 'logistic regression' : (classifier.LRModel(train_data, test_data, preprocessing.pca_preprocessing()), {'model__penalty':['l1', 'l2'], 'model__C':[0.1, 1]}), 
+    #                 'lda': (classifier.lda(train_data, test_data, preprocessing.pca_preprocessing()), {}), 
+    #                 'qda': (classifier.qda(train_data, test_data, preprocessing.pca_preprocessing()), {}), 
+    #                 'sk_MLP': (classifier.sk_NN(train_data, test_data, preprocessing.pca_preprocessing()), {'model__hidden_layer_sizes':[(10), (32, 16, 8)], 'model__alpha':[0, 0.1], 'model__max_iter':[100], 'model__batch_size':[100]})}
 
-    for name, (model, param_grid) in model2test.items():
-        model.grid_search(param_grid, n_fold=2)
-        pred = model.predict()
-        model.save(f'saved_models/{name}')
-        model.visualisation(f'figures/{name}.png')
-        print(f'{name} model after CV grid search has accuracy of {model.score(f1_micro)}')
+    # for name, (model, param_grid) in model2test.items():
+    #     model.grid_search(param_grid, n_fold=2)
+    #     pred = model.predict()
+    #     model.save(f'saved_models/{name}')
+    #     model.visualisation(f'figures/{name}.png')
+    #     print(f'{name} model after CV grid search has accuracy of {model.score(f1_micro)}')
 
     # model.load('/home/yunfei/Desktop/ml-for-medical-data/saved_models/SVM')
     # model.load('saved_models/SVM')
@@ -63,8 +63,8 @@ def main():
     model.save(lr, epochs, f'saved_models/{name}', '')
     # model.visualisation(f'figures/{name}.png')
     print(f'{name} model after CV grid search has accuracy of {model.score(accuracy)}')
-    """
-    model = NN.LSTM_classifier(train_data, test_data, 8, [2, 1], [15, 15])
+    
+    model = NN.LSTM_classifier2(train_data, test_data, 8, 2, 16)
     name = 'LSTM'
     lr, epochs, batch_size = 1e-4, 100, 100
     start_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")

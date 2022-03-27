@@ -20,6 +20,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from itertools import cycle
 
+from metrics.custom_metrics import accuracy
+
 colors = cycle(["navy", "turquoise", "darkorange", "cornflowerblue", "teal"])
 
 # from preprocessing.sequences import table2seq
@@ -82,6 +84,7 @@ class NN_classifier(nn.Module):
                 optim.step()
                 losses.append(l)
             writer.add_scalar('train loss', torch.Tensor(losses).mean(), epoch)
+            # writer.add_scalar('train accuracy', accuracy(yhat, y.reshape(y.shape[0], 1)), epoch)
 
             if test_loop:
                 with torch.no_grad():
@@ -91,6 +94,7 @@ class NN_classifier(nn.Module):
                         l = loss(yhat, y)
                         losses.append(l)
                     writer.add_scalar('test loss', torch.Tensor(losses).mean(), epoch)
+                    # writer.add_scalar('test accuracy', accuracy(yhat, y.reshape(y.shape[0], 1)), epoch) # TODO : add accuracy
 
         return self.model
 
@@ -215,7 +219,7 @@ class NN_classifier(nn.Module):
 
 class LSTM_classifier2(nn.Module):
     """https://pytorch.org/docs/stable/generated/torch.nn.LSTM.html"""
-    def __init__(self, train_data, test_data, input_size, num_layers, hidden_size,proj_size, dropout=0, final_activation=None) -> None:
+    def __init__(self, train_data, test_data, input_size, num_layers, hidden_size, proj_size=0, dropout=0, final_activation=None) -> None:
         #  
         super().__init__()
 
@@ -257,6 +261,7 @@ class LSTM_classifier2(nn.Module):
                 optim.step()
                 losses.append(l)
             writer.add_scalar('train loss', torch.Tensor(losses).mean(), epoch)
+            # writer.add_scalar('train accuracy', accuracy(self.predict(X), y.reshape(y.shape[0], 1)), epoch)
 
             if test_loop:
                 with torch.no_grad():
@@ -268,6 +273,7 @@ class LSTM_classifier2(nn.Module):
                         l = loss(yhat, y)
                         losses.append(l)
                     writer.add_scalar('test loss', torch.Tensor(losses).mean(), epoch)
+                    # writer.add_scalar('test accuracy', accuracy(self.predict(X), y.reshape(y.shape[0], 1)), epoch)
 
         return self.lstm
 
