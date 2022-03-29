@@ -33,9 +33,8 @@ def main():
     print(f'train data class number:\n {train_data[64].value_counts()}')
     print(f'test data class number:\n {test_data[64].value_counts()}')
 
-    # preprocess = preprocessing.normPCA_preprocessing()
-    # preprocess.fit(train_data.iloc[:, 0:64])
-    preprocess=None
+    preprocess = preprocessing.normPCA_preprocessing(n_components=10, kernel='rbf')
+    preprocess.fit(train_data.iloc[:, 0:64])
     ######################## STEP 2 : apply standard models ########################
     
     model2test = {'svm' : (classifier.SVMModel(train_data, test_data, preprocess), {"model__kernel": ["poly", "rbf"], "model__C": [0.1, 1, 100]}),
