@@ -30,7 +30,7 @@ colors = cycle(["navy", "turquoise", "darkorange", "cornflowerblue", "teal"])
 
 class Model(object):
     def __init__(self, train_data, test_data, preprocess, metric='f1_micro'):
-        self.train_X = train_data.iloc[:, 0:64]
+        self.train_X = self.preprocess(train_data.iloc[:, 0:64])
         self.train_y = train_data.iloc[:, 64]
 
         self.test_X = test_data.iloc[:, 0:64]

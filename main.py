@@ -52,28 +52,28 @@ def main():
     # model.load('/home/yunfei/Desktop/ml-for-medical-data/saved_models/SVM')
     # model.load('saved_models/SVM')
     
-    ######################## STEP 3 : apply deep models ########################
+    ####################### STEP 3 : apply deep models ########################
     model = NN.NN_classifier(train_data, test_data, 64, [32, 16, 8], 4)
     name = 'MLP'
     lr, epochs, batch_size = 1e-4, 100, 100
     start_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-    writer = SummaryWriter('figures/runs/' + start_time )
+    writer = SummaryWriter('figures/runs/NN_' + start_time )
     model.fit(nn.CrossEntropyLoss(), lr, epochs, batch_size, writer)
     pred = model.predict()
     model.save(lr, epochs, f'saved_models/{name}', '')
     # model.visualisation(f'figures/{name}.png')
-    print(f'{name} model after CV grid search has accuracy of {model.score(accuracy)}')
+    print(f'{name} model after training has accuracy of {model.score(accuracy)}')
     
-    model = NN.LSTM_classifier2(train_data, test_data, 8, 2, 16)
+    model = NN.LSTM_classifier2(train_data, test_data, input_size=8, num_layers=4, hidden_size=16, proj_size=4, final_activation=nn.Softmax())
     name = 'LSTM'
     lr, epochs, batch_size = 1e-4, 100, 100
     start_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-    writer = SummaryWriter('figures/runs/' + start_time )
+    writer = SummaryWriter('figures/runs/LSTM_' + start_time )
     model.fit(nn.CrossEntropyLoss(), lr, epochs, batch_size, writer)
     pred = model.predict()
     model.save(lr, epochs, f'saved_models/{name}', '')
     # model.visualisation(f'figures/{name}.png')
-    print(f'{name} model after CV grid search has accuracy of {model.score(accuracy)}')
+    print(f'{name} model after training has accuracy of {model.score(accuracy)}')
 
 
 if __name__ == '__main__':
