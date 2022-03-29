@@ -218,7 +218,8 @@ class NN_classifier(nn.Module):
 
 
 class LSTM_classifier2(nn.Module):
-    """https://pytorch.org/docs/stable/generated/torch.nn.LSTM.html"""
+    """ https://pytorch.org/docs/stable/generated/torch.nn.LSTM.html
+        https://zhuanlan.zhihu.com/p/79064602"""
     def __init__(self, train_data, test_data, input_size, num_layers, hidden_size, proj_size=0, dropout=0, final_activation=None) -> None:
         #  
         super().__init__()
