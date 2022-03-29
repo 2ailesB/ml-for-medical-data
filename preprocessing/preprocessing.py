@@ -15,7 +15,7 @@ class basic_preprocessing(BaseEstimator, TransformerMixin):
 
     def transform(self, X, y=None):
         # Numerical features to pass down the numerical pipeline
-        return X.to_numpy()
+        return X
 
 ### TODO : add the parameters of the preprocessing functions from sklearn + in main 
 class pca_preprocessing(BaseEstimator, TransformerMixin):
@@ -25,12 +25,12 @@ class pca_preprocessing(BaseEstimator, TransformerMixin):
         self.model = KernelPCA(n_components=n_components)
 
     def fit(self, X, y=None):
-        self.model.fit(X.to_numpy())
+        self.model.fit(X)
         return self
 
     def transform(self, X, y=None):
         # Numerical features to pass down the numerical pipeline
-        return self.model.transform(X.to_numpy())
+        return self.model.transform(X)
 
 class norm_preprocessing(BaseEstimator, TransformerMixin):
     def __init__(self, n_components=None):
@@ -38,21 +38,22 @@ class norm_preprocessing(BaseEstimator, TransformerMixin):
         self.model = StandardScaler()
 
     def fit(self, X, y=None):
-        self.model.fit(X.to_numpy())
+        self.model.fit(X)
         return self
 
     def transform(self, X, y=None):
         # Numerical features to pass down the numerical pipeline
-        return self.model.transform(X.to_numpy())
+        return self.model.transform(X)
 
 class normPCA_preprocessing(BaseEstimator, TransformerMixin):
     def __init__(self, n_components=None):
         super().__init__()
         self.model = Pipeline(steps=[("scale", norm_preprocessing()), ("pca", pca_preprocessing(n_components=n_components))])
+
     def fit(self, X, y=None):
-        self.model.fit(X.to_numpy())
+        self.model.fit(X)
         return self
 
     def transform(self, X, y=None):
         # Numerical features to pass down the numerical pipeline
-        return self.model.transform(X.to_numpy())
+        return self.model.transform(X)

@@ -33,14 +33,16 @@ def main():
     print(f'train data class number:\n {train_data[64].value_counts()}')
     print(f'test data class number:\n {test_data[64].value_counts()}')
 
+    preprocess = preprocessing.normPCA_preprocessing()
+    preprocess.fit(train_data.iloc[:, 0:64])
     ######################## STEP 2 : apply standard models ########################
     
-    # model2test = {'svm' : (classifier.SVMModel(train_data, test_data, preprocessing.pca_preprocessing()), {"preprocess__n_components": [None], "model__kernel": ["rbf"], "model__C": [0.1, 1, 10]}),
-    #                 'rf' : (classifier.RFModel(train_data, test_data, preprocessing.pca_preprocessing()), {"model__n_estimators" : [100], "model__criterion": ['gini', 'entropy'], "model__max_depth":[2]}),
-    #                 'logistic regression' : (classifier.LRModel(train_data, test_data, preprocessing.pca_preprocessing()), {'model__penalty':['l1', 'l2'], 'model__C':[0.1, 1]}), 
-    #                 'lda': (classifier.lda(train_data, test_data, preprocessing.pca_preprocessing()), {}), 
-    #                 'qda': (classifier.qda(train_data, test_data, preprocessing.pca_preprocessing()), {}), 
-    #                 'sk_MLP': (classifier.sk_NN(train_data, test_data, preprocessing.pca_preprocessing()), {'model__hidden_layer_sizes':[(10), (32, 16, 8)], 'model__alpha':[0, 0.1], 'model__max_iter':[100], 'model__batch_size':[100]})}
+    # model2test = {'svm' : (classifier.SVMModel(train_data, test_data, preprocess), {"model__kernel": ["rbf"], "model__C": [0.1, 1, 10]}),
+    #                 'rf' : (classifier.RFModel(train_data, test_data, preprocess), {"model__n_estimators" : [100], "model__criterion": ['gini', 'entropy'], "model__max_depth":[2]}),
+    #                 'logistic regression' : (classifier.LRModel(train_data, test_data, preprocess), {'model__penalty':['l1', 'l2'], 'model__C':[0.1, 1]}), 
+    #                 'lda': (classifier.lda(train_data, test_data, preprocess), {}), 
+    #                 'qda': (classifier.qda(train_data, test_data, preprocess), {}), 
+    #                 'sk_MLP': (classifier.sk_NN(train_data, test_data, preprocess), {'model__hidden_layer_sizes':[(10), (32, 16, 8)], 'model__alpha':[0, 0.1], 'model__max_iter':[100], 'model__batch_size':[100]})}
 
     # for name, (model, param_grid) in model2test.items():
     #     model.grid_search(param_grid, n_fold=2)
