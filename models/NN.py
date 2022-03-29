@@ -28,14 +28,20 @@ colors = cycle(["navy", "turquoise", "darkorange", "cornflowerblue", "teal"])
 
 
 class NN_classifier(nn.Module):
-    def __init__(self, train_data, test_data, n_in, layers, n_out, activation=nn.ReLU(), final_activation=None, p=0, batchnorm=True) -> None:
+    def __init__(self, train_data, test_data, n_in, layers, n_out, activation=nn.ReLU(), final_activation=None, p=0, batchnorm=True, preprocess=None) -> None:
         # https://stackoverflow.com/questions/46141690/how-to-write-a-pytorch-sequential-model
         super().__init__()
 
-        self.train_X = torch.Tensor(train_data.iloc[:, 0:64].to_numpy())
+        self.preprocess = preprocess
+        train_X, test_X = train_data.iloc[:, 0:64].to_numpy(), test_data.iloc[:, 0:64].to_numpy()
+        if preprocess:
+            train_X = self.preprocess.transform(train_X)
+            test_X = self.preprocess.transform(test_X)
+
+        self.train_X = torch.Tensor(train_X)
         self.train_y = torch.Tensor(train_data.iloc[:, 64].to_numpy())
 
-        self.test_X = torch.Tensor(test_data.iloc[:, 0:64].to_numpy())
+        self.test_X = torch.Tensor(test_X)
         self.test_y = torch.Tensor(test_data.iloc[:, 64].to_numpy())
 
         layerlist = []
@@ -134,10 +140,16 @@ class LSTM_classifier2(nn.Module):
         #  
         super().__init__()
 
-        self.train_X = torch.Tensor(train_data.iloc[:, 0:64].to_numpy()).reshape(len(train_data), 8, 8) # N_sample, T,  N_feature(9342, 8, 8)
+        self.preprocess = preprocess
+        train_X, test_X = train_data.iloc[:, 0:64].to_numpy(), test_data.iloc[:, 0:64].to_numpy()
+        if preprocess:
+            train_X = self.preprocess.transform(train_X)
+            test_X = self.preprocess.transform(test_X)
+
+        self.train_X = torch.Tensor(train_X).reshape(len(train_data), 8, 8) # N_sample, T,  N_feature(9342, 8, 8)
         self.train_y = torch.Tensor(train_data.iloc[:, 64].to_numpy())
 
-        self.test_X =  torch.Tensor(test_data.iloc[:, 0:64].to_numpy()).reshape(len(test_data), 8, 8) #  N_sample, T,  N_feature(9342, 8, 8)
+        self.test_X =  torch.Tensor(test_X).reshape(len(test_data), 8, 8) #  N_sample, T,  N_feature(9342, 8, 8)
         self.test_y = torch.Tensor(test_data.iloc[:, 64].to_numpy())
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
