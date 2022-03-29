@@ -31,17 +31,21 @@ colors = cycle(["navy", "turquoise", "darkorange", "cornflowerblue", "teal"])
 class Model(object):
     def __init__(self, train_data, test_data, preprocess, metric='f1_micro'):
         self.preprocess = preprocess
-        self.train_X = self.preprocess.transform(train_data.iloc[:, 0:64])
+        train_X, test_X = train_data.iloc[:, 0:64].to_numpy(), test_data.iloc[:, 0:64].to_numpy()
+        if preprocess:
+            train_X = self.preprocess.transform(train_X)
+            test_X = self.preprocess.transform(test_X)
+
+        self.train_X = train_X
         self.train_y = train_data.iloc[:, 64]
 
-        self.test_X = self.preprocess.transform(test_data.iloc[:, 0:64])
+        self.test_X = test_X
         self.test_y = test_data.iloc[:, 64]
 
         self.parameter_optimal = {}
         self.model = None
         self.metric = metric
 
-    
     def grid_search(self, parameters, n_fold):
         """Grid search on train dataset"""
         # Parameters of pipelines can be set using ‘__’ separated parameter names:
@@ -50,21 +54,6 @@ class Model(object):
         self.model = search.best_estimator_
         self.search = search
         return self.search
-
-
-    def visualisation(self, path, metrics='mean_test_score'):
-        'save figure of cv'
-
-        fig = plt.figure()
-        scores = [x for x in self.gs_result.cv_results_[metrics]]
-        plt.plot(scores)
-        plt.xlabel('parameters')
-        plt.ylabel(metrics)
-        plt.title(f'{metrics} for models tested during grid search')
-        plt.savefig(path)
-        plt.clf()
-        return None
-
 
     def evaluation(self, name):
         """Result evaluatio on test dataset with optimal parameters after grids search"""
@@ -159,10 +148,10 @@ class Model(object):
             implement custom metrics as in https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter
         """
 
-        fig = plt.figure()
+        fig = plt.figure(figsize=(20, 10))
         scores = [x for x in self.search.cv_results_[metrics]]
         params_values = [y for y in self.search.cv_results_['params']]
-        # params_values = format_paramsdict(params_values)
+        params_values = format_paramsdict(params_values)
         plt.xticks(np.arange(len(params_values)), params_values)
         plt.plot(scores)
         plt.xlabel('parameters')

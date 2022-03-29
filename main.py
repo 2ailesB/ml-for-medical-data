@@ -33,17 +33,18 @@ def main():
     print(f'train data class number:\n {train_data[64].value_counts()}')
     print(f'test data class number:\n {test_data[64].value_counts()}')
 
-    preprocess = preprocessing.normPCA_preprocessing()
+    preprocess = preprocessing.normPCA_preprocessing(n_components=10, kernel='rbf')
     preprocess.fit(train_data.iloc[:, 0:64])
     ######################## STEP 2 : apply standard models ########################
     
-    model2test = {'svm' : (classifier.SVMModel(train_data, test_data, preprocess), {"model__kernel": ["rbf"], "model__C": [0.1, 1, 10]}),
-                    'rf' : (classifier.RFModel(train_data, test_data, preprocess), {"model__n_estimators" : [100], "model__criterion": ['gini', 'entropy'], "model__max_depth":[2]}),
-                    'logistic regression' : (classifier.LRModel(train_data, test_data, preprocess), {'model__penalty':['l1', 'l2'], 'model__C':[0.1, 1]}), 
+    model2test = {'svm' : (classifier.SVMModel(train_data, test_data, preprocess), {"model__kernel": ["poly", "rbf"], "model__C": [0.1, 1, 100]}),
+                    'rf' : (classifier.RFModel(train_data, test_data, preprocess), {"model__n_estimators": [100, 50], "model__criterion": ["gini", "entropy"], "model__max_depth":[None, 10]}),
+                    'logistic regression' : (classifier.LRModel(train_data, test_data, preprocess), {"model__penalty": ['l1', 'l2', 'elasticnet', 'none'], "model__C":[0, 0.1, 1, 10]}), 
                     'lda': (classifier.lda(train_data, test_data, preprocess), {}), 
                     'qda': (classifier.qda(train_data, test_data, preprocess), {}), 
-                    'sk_MLP': (classifier.sk_NN(train_data, test_data, preprocess), {'model__hidden_layer_sizes':[(10), (32, 16, 8)], 'model__alpha':[0, 0.1], 'model__max_iter':[100], 'model__batch_size':[100]})}
+                    'sk_MLP': (classifier.sk_NN(train_data, test_data, preprocess), {'model__hidden_layer_sizes':[(10), (15, 15), (32, 16, 8)], 'model__alpha':[0, 0.1], 'model__max_iter':[100], 'model__batch_size':[100]})}
 
+    # model2test = {'rf' : (classifier.RFModel(train_data, test_data, preprocess), {"model__n_estimators": [100, 50], "model__criterion": ["gini", "entropy"], "model__max_depth":[None, 10]})}
     for name, (model, param_grid) in model2test.items():
         model.grid_search(param_grid, n_fold=2)
         pred = model.predict()
