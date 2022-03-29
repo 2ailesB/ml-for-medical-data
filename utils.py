@@ -1,6 +1,9 @@
 def format_paramsdict(params_dict):
-    for p in params_dict:
-        for v in p.items():
-            p[v[0]] = '\n ' + str(v[1])
+    temp = []
+    for params in params_dict:
+        pstr = ''
+        for k, p in params.items():
+            pstr += k[7:] + ' : '+ str(p) + '\n'
+        temp.append(pstr)
 
-    return params_dict
+    return temp
