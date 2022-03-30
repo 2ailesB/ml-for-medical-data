@@ -57,10 +57,8 @@ def main():
 
 
     LSTM = NN.LSTM_classifier2(train_data, test_data, input_size=8, num_layers=4, hidden_size=16, proj_size=4, dropout=0.2, final_activation=nn.Softmax(dim=1))
-    LSTM.load('saved_models\LSTM\ckpt__epoch100.ckpt')
+    LSTM.load('saved_models/LSTM/ckpt__epoch100.ckpt')
     LSTM.estimate_time()
-
-    
 
 if __name__ == '__main__':
     main()

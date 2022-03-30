@@ -9,3 +9,6 @@ To do this project, we have chosen a classification dataset called "Classify ges
 * metrics: metrics for evaluations
 * models: models for making predictions
 * preprocessing: data preprocessing
+
+# Caution
+Dependong on the system used, be careful of the path to the data, models and figures. In particular windows are using '/' to separate folders and linux/max '\'. 
