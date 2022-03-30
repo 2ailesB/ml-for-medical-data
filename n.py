@@ -7,6 +7,8 @@ from torch.utils.tensorboard import SummaryWriter
 import datetime
 from models import NN
 from torch import nn
+from models import classifier
+from preprocessing import preprocessing
 ######################## STEP 1 : reading and preprocessing data ########################
 # data reading
 data = formatting.read_data()
@@ -29,7 +31,10 @@ print(f'test data class number:\n {test_data[64].value_counts()}')
 # pred = LSTM.predict_proba(test_data)
 # print(pred[0])
 
-LSTM = NN.LSTM_classifier2(train_data, test_data, input_size=8, num_layers=4, hidden_size=16, proj_size=4, dropout=0.2, final_activation=nn.Softmax(dim=1))
-LSTM.load('saved_models\LSTM\ckpt__epoch100.ckpt')
-# LSTM.predict_proba(test_data)
-LSTM.evaluation('LSTM')
+# LSTM = NN.LSTM_classifier2(train_data, test_data, input_size=8, num_layers=4, hidden_size=16, proj_size=4, dropout=0.2, final_activation=nn.Softmax(dim=1))
+# LSTM.load('saved_models\LSTM\ckpt__epoch100.ckpt')
+# # LSTM.predict_proba(test_data)
+# LSTM.evaluation('LSTM')
+
+model = classifier.MultiRFModel(train_data, test_data, preprocessing.basic_preprocessing())
+model.evaluation('Random Forest_PR')

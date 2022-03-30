@@ -179,6 +179,38 @@ class RFModel(Model):
         self.model = RandomForestClassifier(random_state=0)
         self.pipe = Pipeline(steps=[("model", self.model)])
 
+class MultiRF():
+    def __init__(self) -> None:
+        self.classifiers = []
+        for i in range(8):
+            model =  RandomForestClassifier(random_state=0, criterion='entropy', max_depth=None, n_estimators=100)
+            self.classifiers.append(model)
+
+    def fit(self, X, y):
+        for i, model in enumerate(self.classifiers):
+            model.fit(X[:, i*8: (i + 1) * 8], y)
+
+    def predict_proba(self, X, y=None):
+        n_sample = X.shape[0]
+        prob = np.zeros((n_sample, self.classifiers[0].n_classes_))
+        for i, model in enumerate(self.classifiers):
+            prob += model.predict_proba(X[:, i*8: (i + 1) * 8])
+        prob /= 8
+        return prob
+    
+    def predict(self, X, y=None):
+        prob = self.predict_proba(X)
+        return np.argmax(prob, axis=1)
+
+
+class MultiRFModel(Model):
+    """
+        https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html?highlight=random%20classifier#sklearn.ensemble.RandomForestClassifier"""
+    def __init__(self, train_data, test_data, preprocess, metric='f1_micro'):
+        super().__init__(train_data, test_data, preprocess, metric)
+        self.model = MultiRF()
+        self.pipe = Pipeline(steps=[("model", self.model)])
+
 class LRModel(Model):
     """
         https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html"""
