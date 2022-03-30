@@ -17,7 +17,7 @@ from sklearn.metrics import PrecisionRecallDisplay
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import average_precision_score
 
-
+import time 
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import cycle
@@ -54,6 +54,18 @@ class Model(object):
         self.search = search
         return self.search
 
+    def estimate_time(self, parameters):
+        self.model.set_params(**parameters)
+        start_time = time.time()
+        self.model.fit(self.train_X, self.train_y)
+        train_time = time.time() - start_time
+
+        start_time = time.time()
+        self.predict()
+        ex_time = time.time() - start_time
+
+        return train_time, ex_time
+        
     def evaluation(self, name):
         """Result evaluatio on test dataset with optimal parameters after grids search"""
         train_Y = label_binarize(self.train_y, classes=[0, 1, 2, 3])
