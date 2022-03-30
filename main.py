@@ -61,7 +61,8 @@ def main():
                     'logistic regression' : (classifier.LRModel(train_data, test_data, preprocess), {"penalty": 'l1', "C":0.1}), 
                     'lda': (classifier.lda(train_data, test_data, preprocess), {}), 
                     'qda': (classifier.qda(train_data, test_data, preprocess), {}), 
-                    'sk_MLP': (classifier.sk_NN(train_data, test_data, preprocess), {'hidden_layer_sizes':(32, 16, 8), 'alpha':0.1, 'max_iter':100, 'batch_size':100})}
+                    'sk_MLP': (classifier.sk_NN(train_data, test_data, preprocess), {'hidden_layer_sizes':(32, 16, 8), 'alpha':0.1, 'max_iter':100, 'batch_size':100}), 
+                    'multi_rf':(classifier.MultiRFModel(train_data, test_data, preprocess), {})}
 
     for name, (model, param_grid) in model2test.items():
         t_time, e_time = model.estimate_time(param_grid)

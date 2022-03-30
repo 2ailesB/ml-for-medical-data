@@ -214,6 +214,9 @@ class MultiRF():
         prob = self.predict_proba(X)
         return np.argmax(prob, axis=1)
 
+    def set_params(self):
+        pass
+
 
 class MultiRFModel(Model):
     """
