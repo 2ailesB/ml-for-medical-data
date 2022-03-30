@@ -34,7 +34,7 @@ class pca_preprocessing(BaseEstimator, TransformerMixin):
         return self.model.transform(X)
 
 class norm_preprocessing(BaseEstimator, TransformerMixin):
-    def __init__(self, n_components=None):
+    def __init__(self):
         super().__init__()
         self.model = StandardScaler()
 

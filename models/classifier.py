@@ -35,11 +35,10 @@ class Model(object):
         if preprocess:
             train_X = self.preprocess.transform(train_X)
             test_X = self.preprocess.transform(test_X)
-
         self.train_X = train_X
         self.train_y = train_data.iloc[:, 64]
 
-        self.test_X = test_X
+        self.test_X = test_X        
         self.test_y = test_data.iloc[:, 64]
 
         self.parameter_optimal = {}
