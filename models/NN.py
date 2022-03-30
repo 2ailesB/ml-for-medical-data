@@ -5,6 +5,7 @@ from torch.utils.data import TensorDataset, DataLoader
 
 from tqdm import tqdm
 import os
+import time
 
 from sklearn.multiclass import OneVsRestClassifier
 import sklearn.metrics as metrics
@@ -21,6 +22,7 @@ import matplotlib.pyplot as plt
 from itertools import cycle
 
 from metrics.custom_metrics import accuracy
+
 
 colors = cycle(["navy", "turquoise", "darkorange", "cornflowerblue", "teal"])
 
@@ -132,6 +134,12 @@ class NN_classifier(nn.Module):
     def grid_search(self):
         pass
 
+    def estimate_time(self):
+        start_time = time.time()
+        self.predict()
+        ex_time = time.time() - start_time
+        print(f'NN model test time: {ex_time}')
+
 
 class LSTM_classifier2(nn.Module):
     """https://pytorch.org/docs/stable/generated/torch.nn.LSTM.html"""
@@ -206,7 +214,8 @@ class LSTM_classifier2(nn.Module):
 
     def predict(self):
         """Prediction with optimal parameters"""
-        return torch.argmax(self.lstm(self.test_X)[0][:, -1, :], dim=1)
+        X = self.test_X.to(self.device)
+        return torch.argmax(self.lstm(X)[0][:, -1, :], dim=1)
 
     def predict_proba(self, x):
         """Prediction of probability for each class with softmax"""
@@ -298,3 +307,8 @@ class LSTM_classifier2(nn.Module):
         plt.savefig(f'./figures/{name}')
         plt.show()
 
+    def estimate_time(self):
+        start_time = time.time()
+        self.predict()
+        ex_time = time.time() - start_time
+        print(f'LSTM model test time: {ex_time}')

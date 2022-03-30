@@ -51,7 +51,16 @@ def main():
         t_time, e_time = model.estimate_time(param_grid)
         print(f'{name} model has training time {t_time} and execution time {e_time}')
     
+    ######################## STEP 2 : apply neural networks ########################
+    MLP = NN.NN_classifier(train_data, test_data, 64, [32, 16, 8], 4)
+    MLP.estimate_time()
 
+
+    LSTM = NN.LSTM_classifier2(train_data, test_data, input_size=8, num_layers=4, hidden_size=16, proj_size=4, dropout=0.2, final_activation=nn.Softmax(dim=1))
+    LSTM.load('saved_models\LSTM\ckpt__epoch100.ckpt')
+    LSTM.estimate_time()
+
+    
 
 if __name__ == '__main__':
     main()
